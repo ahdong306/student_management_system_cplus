@@ -1,9 +1,40 @@
 #include <iostream>
 #include <stdlib.h>
 #include <vector>
+#include "TablePrinter.hpp"
 using namespace std;
 
 void printMainScreen();
+int CONSOLEMAXLENGTH = 128;
+int APPMAXLENGTH = 120;
+int LEFTPADDINGLENGTH= (CONSOLEMAXLENGTH- APPMAXLENGTH)/2;
+void centerPrint(string text="", string left_right_decoration="***", bool follow_input=false, int move_left=0){
+    for(int i=0;i<LEFTPADDINGLENGTH;i++){
+        cout<<" ";
+    }
+    cout<<left_right_decoration;
+    int left_space_length = (APPMAXLENGTH - text.size())/2 - left_right_decoration.size() - move_left;
+    for(int i=0;i<left_space_length;i++){
+        cout<<" ";
+    }
+    cout<<text;
+    if(left_right_decoration!="" && !follow_input){
+        int right_space_length = APPMAXLENGTH - left_right_decoration.size() * 2 - text.size() - left_space_length;
+        for(int i=0;i<right_space_length;i++){
+            cout<<" ";  
+        }
+        cout<<left_right_decoration;
+
+    }
+    if(!follow_input)
+        cout<<endl;     
+}
+
+void manyPrint(int n){
+    for(int i=0;i<n;i++){
+        centerPrint();
+    }
+}
 
 class Student{
     public:
@@ -52,65 +83,80 @@ void printStudent(Student stu){
 
 void printAddRecordScreen(){
     system("clear");
-    cout << " Add a new student " << endl;
-    cout << " Enter student id: ";
+    manyPrint(10);
+    centerPrint( " Add a new student ");
+    manyPrint(10);
+    centerPrint( " Enter student id: ", "", true, 20);
     int id;
     cin >> id;
-    cout << " Enter student first name: ";
+    centerPrint( " Enter student first name: ", "", true, 20);
     string firstName;
     cin >> firstName;
-    cout << " Enter student last name: ";
+    centerPrint( " Enter student last name: ", "", true, 20);
     string lastName;
     cin >> lastName;
-    cout << " Enter student gender: ";
+    centerPrint( " Enter student gender: ", "", true, 20);
     char gender;
     cin >> gender;
-    cout << " Enter student major: ";
+    centerPrint( " Enter student major: ", "", true, 20);
     string major;
     cin >> major;
     addAStudent(id, firstName, lastName, gender, major);
-    cout<<" Add student successfully! "<<endl;
-    cout << " Enter any key to return to main screen: ";
-    cout << " Enter your choice: ";
+    centerPrint();
+    centerPrint();
+    centerPrint(" Add student successfully! ");
+    centerPrint( " Enter any key to return to main screen: ", "", true, 20);
     string choice;
     cin >> choice;
     printMainScreen();
 }
 
 void printDeleteRecordScreen(){
-    cout<<" Delete a student "<<endl;
-    cout << " Enter student id: ";
+    system("clear");
+    manyPrint(12);
+    centerPrint(" Delete a student ");
+    manyPrint(12);
+    centerPrint( " Enter student id: ", "", true, 20);
     int id;
     cin >> id;
-    cout<<" Delete student successfully! "<<endl;
+    centerPrint( " Delete student successfully! ");
     deleteAStudent(id);
-    cout << " Enter any key to return to main screen: ";
-    cout << " Enter your choice: ";
+    centerPrint( " Enter any key to return to main screen: ", "", true, 20);
     string choice;
     cin >> choice;
     printMainScreen();
 }
 void printUpdateScreen(){
-    cout<<" Update a student "<<endl;
-    cout << " Enter student id: ";
+    system("clear");
+    centerPrint();
+    centerPrint();
+    centerPrint();
+    centerPrint();
+    centerPrint();
+    centerPrint();
+    centerPrint(" Update a student ");
+    centerPrint();
+    centerPrint();
+    centerPrint();
+    centerPrint( " Enter student id: ", "", true, 20);
     int id;
     cin >> id;
-    cout << " Enter student first name: ";
+    centerPrint( " Enter student first name: ", "", true, 20);
     string firstName;
     cin >> firstName;
+    centerPrint( " Enter student last name: ", "", true, 20);
     string lastName;
-    cout << " Enter student last name: ";
     cin >> lastName;
+    centerPrint( " Enter student gender: ", "", true, 20);
     char gender;
-    cout << " Enter student gender: ";
     cin >> gender;
+    centerPrint( " Enter student major: ", "", true, 20);
     string major;
-    cout << " Enter student major: ";
     cin >> major;
     updateAStudent(id, firstName, lastName, gender, major);
-    cout<<" Update student successfully! "<<endl;
-    cout << " Enter any key to return to main screen: ";
-    cout << " Enter your choice: ";
+    centerPrint(" Update student successfully! ");
+    centerPrint();
+    centerPrint( " Enter any key to return to main screen: ", "", true, 20);
     string choice;
     cin >> choice;
     printMainScreen();
@@ -119,16 +165,17 @@ void printViewScreen();
 
 void printMainScreen(){
     system("clear");
-    cout << "" << endl;
-    cout << "" << endl;
-    cout << "" << endl;
-    cout << "" << endl;
-    cout << " Welcome to Student Management System " << endl;
-    cout << " 1. View all students" << endl;
-    cout << " 2. Add a new student" << endl;
-    cout << " 3. Delete a student" << endl;
-    cout << " 4. Update a student" << endl;
-    cout << " Enter your choice: ";
+    manyPrint(10);
+    centerPrint(" Welcome to Student Management System ");
+    manyPrint(3);
+
+    centerPrint("1. View all students");
+    centerPrint("2. Add a new student");
+    centerPrint("3. Delete a student");
+    centerPrint("4. Update a student");
+    manyPrint(10);
+
+    centerPrint(" Enter your choice: ", "", true, 20);
     int choice;
     cin >> choice;
     switch (choice){
@@ -149,18 +196,38 @@ void printMainScreen(){
     }
 }
 
-void printStudentList(vector<Student> stu_vec){
+void printStudentList_old(vector<Student> stu_vec){
     for(int i = 0; i < stu_vec.size(); i++){
         printStudent(stu_vec[i]);
     }
 }
 
+void printStudentList(vector<Student> stu_vec){
+    trl::TablePrinter tp;
+    tp.AddColumn("id", 10);
+    tp.AddColumn("firstName", 20);
+    tp.AddColumn("lastName", 20);
+    tp.AddColumn("gender", 10);
+    tp.AddColumn("major", 30);
+    tp.PrintHeader();
+
+    for(int i = 0; i < stu_vec.size(); i++){
+        tp<<stu_vec[i].id
+        <<stu_vec[i].firstName
+        <<stu_vec[i].lastName
+        <<stu_vec[i].gender
+        <<stu_vec[i].major;
+    }
+    tp.PrintFooter();
+    
+}
+
 void printViewScreen(){
     system("clear");
-    cout << " View all students " << endl;
+    centerPrint("View all students");
+    // cout << " View all students " << endl;
     printStudentList(records);
     cout << " Enter any key to return to main screen: ";
-    cout << " Enter your choice: ";
     string choice;
     cin >> choice;
     printMainScreen();
